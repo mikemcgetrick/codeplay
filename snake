@@ -1,0 +1,115 @@
+ <!DOCTYPE html>
+ <html>
+ <head>
+ <title>Snake Game</title>
+ <style>
+ #game-board {
+ border: 1px solid black;
+ width: 400px;
+ height: 400px;
+ display: grid;
+ grid-template-columns: repeat(20, 1fr);
+ grid-template-rows: repeat(20, 1fr);
+ }
+ .snake-segment {
+ background-color: green;
+ }
+ .food {
+ background-color: red;
+ }
+ </style>
+ </head>
+ <body>
+ <div id="game-board"></div>
+ <script>
+ const gameBoard = document.getElementById('game-board');
+ const gridSize = 20;
+ let snake = [{x: 10, y: 10}];
+ let food = generateFood();
+ let direction = 'right';
+ let gameInterval = setInterval(update, 200);
+ 
+
+ function generateFood() {
+ return {
+ x: Math.floor(Math.random() * gridSize),
+ y: Math.floor(Math.random() * gridSize)
+ };
+ }
+ 
+
+ function update() {
+ const head = {x: snake[0].x, y: snake[0].y};
+ 
+
+ switch (direction) {
+ case 'up': head.y--; break;
+ case 'down': head.y++; break;
+ case 'left': head.x--; break;
+ case 'right': head.x++; break;
+ }
+ 
+
+ if (head.x < 0 || head.x >= gridSize || head.y < 0 || head.y >= gridSize || checkCollision(head)) {
+ clearInterval(gameInterval);
+ alert('Game Over!');
+ return;
+ }
+ 
+
+ snake.unshift(head);
+ 
+
+ if (head.x === food.x && head.y === food.y) {
+ food = generateFood();
+ } else {
+ snake.pop();
+ }
+ 
+
+ draw();
+ }
+ 
+
+ function checkCollision(head) {
+ for (let i = 1; i < snake.length; i++) {
+ if (head.x === snake[i].x && head.y === snake[i].y) {
+ return true;
+ }
+ }
+ return false;
+ }
+ 
+
+ function draw() {
+ gameBoard.innerHTML = '';
+ 
+
+ snake.forEach(segment => {
+ const snakeElement = document.createElement('div');
+ snakeElement.style.gridColumnStart = segment.x + 1;
+ snakeElement.style.gridRowStart = segment.y + 1;
+ snakeElement.classList.add('snake-segment');
+ gameBoard.appendChild(snakeElement);
+ });
+ 
+
+ const foodElement = document.createElement('div');
+ foodElement.style.gridColumnStart = food.x + 1;
+ foodElement.style ColonStart = food.y + 1;
+ foodElement.classList.add('food');
+ gameBoard.appendChild(foodElement);
+ }
+ 
+
+ document.addEventListener('keydown', e => {
+ switch (e.key) {
+ case 'ArrowUp': if (direction !== 'down') direction = 'up'; break;
+ case 'ArrowDown': if (direction !== 'up') direction = 'down'; break;
+ case 'ArrowLeft': if (direction !== 'right') direction = 'left'; break;
+ case 'ArrowRight': if (direction !== 'left') direction = 'right'; break;
+ }
+ });
+ </script>
+ </body>
+ </html>
